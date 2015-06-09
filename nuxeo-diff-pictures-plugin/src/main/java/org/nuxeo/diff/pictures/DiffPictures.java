@@ -91,43 +91,28 @@ public class DiffPictures {
             params.addNamedParameter(entry.getKey(), (String) entry.getValue());
         }
 
-        String destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis() + "-"
-                + finalName;
-        
-        File tempDestFile = new File(destFilePath);
-        tempDestFile.createNewFile();
-        /*
-          tempDestFile = File.createTempFile(TEMP_FILE_PREFIX,
-                        destFileExtension);
-                tempDestFile.deleteOnExit();
-                Framework.trackFile(tempDestFile, this);
-                params.addNamedParameter("targetFilePath",
-                        tempDestFile.getAbsolutePath());
-         */
+        String destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis()
+                + "-" + finalName;
         params.addNamedParameter("targetFilePath", destFilePath);
 
         CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         ExecResult execResult = cles.execCommand(commandLine, params);
 
-        /*
-        if(execResult.getError() != null) {
-            throw new ClientException("Failed to execute the command <"
-                    + commandLine + ">", execResult.getError());
-        }
-        */
-        /*
-        if (!execResult.isSuccessful()) {
+        // A big warning here.
+        // ImageMagick can return a non zero code with some of its commands,
+        // while the execution went totally OK, with no error. The problem is
+        // that the CommandLineExecutorService assumes a non-zero return code is
+        // an error => we must handle the thing by ourselves, basically just
+        // checking if we do have a comparison file created by IMageMagick
+        File tempDestFile = new File(destFilePath);
+        if (!tempDestFile.exists()) {
             throw new ClientException("Failed to execute the command <"
                     + commandLine + ">. Final command [ "
-                    + execResult.getCommandLine()
-                    + " ] returned with error "
-                    + execResult.getReturnCode());
+                    + execResult.getCommandLine() + " ] returned with error "
+                    + execResult.getReturnCode(), execResult.getError());
         }
-        */
-        
-        File fileResult = new File(destFilePath);
-        result = new FileBlob(fileResult);
 
+        result = new FileBlob(tempDestFile);
         if (result != null) {
             result.setFilename(finalName);
         }
