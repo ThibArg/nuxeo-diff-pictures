@@ -98,12 +98,12 @@ public class DiffPictures {
         CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         ExecResult execResult = cles.execCommand(commandLine, params);
 
-        // A big warning here.
+        // WARNING
         // ImageMagick can return a non zero code with some of its commands,
         // while the execution went totally OK, with no error. The problem is
         // that the CommandLineExecutorService assumes a non-zero return code is
         // an error => we must handle the thing by ourselves, basically just
-        // checking if we do have a comparison file created by IMageMagick
+        // checking if we do have a comparison file created by ImageMagick
         File tempDestFile = new File(destFilePath);
         if (!tempDestFile.exists()) {
             throw new ClientException("Failed to execute the command <"
