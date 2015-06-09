@@ -1,0 +1,32 @@
+<component name="org.nuxeo.diff.pictures.commandlines">
+
+  <!-- Please, do not format this file to nuxeo formating convention. On Windows, 
+    for example, we can't have line breaks in the command -->
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib
+  </require>
+  <extension
+    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <!-- Raw comparison, faster. But the 2 same pictures in different format will
+         result in a big "change" while ultimately, they are basically the same.
+         Default values for fuzz (0), -highlight-color ("Red") and -lowlight-color
+         ("White") apply when they are not used in the parameters of the command-line
+    -->
+    <command name="diff-pictures-default" enabled="true">
+      <commandLine>compare</commandLine>
+      <parameterString>#{file1} #{file2} -fuzz #{fuzz} -highlight-color #{highlightColor} -lowlight-color #{lowlightColor} #{targetFilePath}</parameterString>
+      <installationDirective>You must install ImageMagick.</installationDirective>
+    </command>
+
+    <!-- Will compare pictures even if they are not of the same size or format, etc. -->
+    <command name="diff-pictures-pro" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>#{file1} #{file2} -compose difference -composite #{targetFilePath}</parameterString>
+      <installationDirective>You must install ImageMagick.</installationDirective>
+    </command>
+
+  </extension>
+</component>
+
