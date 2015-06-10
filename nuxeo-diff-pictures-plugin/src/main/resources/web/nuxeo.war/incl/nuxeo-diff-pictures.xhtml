@@ -1,0 +1,49 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:s="http://jboss.org/schema/seam/taglib">
+
+  <LINK href="#{contextPath}/css/nuxeo-diff-pictures.css" rel="stylesheet" type="text/css" />
+
+  <h3>
+    <h:outputText value="#{currentDocument.title} - Compare Pictures"/>
+  </h3>
+
+    <div id="#{fancyboxFormId}">
+  <c:choose>
+    <c:when test="#{pictDiffActions.prepareCompareToLastVersion()}">
+        <div id="#{fancyboxFormId}_left" class="nxdiff_imageContainer">
+          <h4 class="nxdiff_imageLabel">#{pictDiffActions.getLeftLabel()}</h4>
+          <img src="#{pictDiffActions.getLeftImageUrl()}" alt="Failed to get the Left Image" class="nxdiff_image" />
+        </div>
+        <div id="#{fancyboxFormId}_right" class="nxdiff_imageContainer">
+          <h4 class="nxdiff_imageLabel">#{pictDiffActions.getRightLabel()}</h4>
+           <img src="#{pictDiffActions.getRightImageUrl()}" alt="Failed to get the Left Image" class="nxdiff_image" />
+        </div>
+        <div id="#{fancyboxFormId}_result" class="nxdiff_imageContainer">
+          <h4 class="nxdiff_imageLabel">Differences tutu</h4>
+
+          #{pictDiffActions.paint(null, null)}
+          
+          <p>#{org.jboss.seam.core.manager.currentConversationId}</p>
+          <a4j:mediaOutput element="img" cacheable="false" createContent="#{pictDiffActions.paint}" value="coucou" mimeType="image/png">
+            <s:conversationId value="#{org.jboss.seam.core.manager.currentConversationId}" />
+          </a4j:mediaOutput>
+
+        </div>
+    </c:when>
+    <c:otherwise>
+      <div>
+      <p>Nothing to compare</p>
+      </div>
+    </c:otherwise>
+  </c:choose>
+  </div>
+
+</div>

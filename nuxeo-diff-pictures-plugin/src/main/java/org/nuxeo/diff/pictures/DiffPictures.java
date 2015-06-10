@@ -112,10 +112,12 @@ public class DiffPictures {
                     + execResult.getReturnCode(), execResult.getError());
         }
 
+        //Framework.trackFile(tempDestFile, this);
         result = new FileBlob(tempDestFile);
         if (result != null) {
             result.setFilename(finalName);
         }
+        
         return result;
     }
 

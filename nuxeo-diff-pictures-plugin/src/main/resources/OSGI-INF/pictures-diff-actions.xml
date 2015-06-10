@@ -1,0 +1,37 @@
+<component name="org.nuxeo.diff.pictures.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="displayDiffPictures" order="0" label="Compare to Last Version Picture" type="fancybox">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <!-- <category>CURRENT_VERSION_SELECTION_LIST</category> -->
+      <!-- <category>VERSION_LIST_ITEM</category> -->
+      <filter-id>canComparePictures</filter-id>
+      <properties>
+        <property name="include">/incl/nuxeo-diff-pictures.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">90%</property>
+        <property name="height">100%</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canComparePictures">
+      <rule grant="false">
+        <facet>Immutable</facet>
+      </rule>
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

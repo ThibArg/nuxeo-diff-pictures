@@ -1,0 +1,30 @@
+<component name="org.nuxeo.diff.pictures.diffservice">
+	<require>org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
+	</require>
+	<extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+		point="diffDisplay">
+
+		<diffDisplay type="Picture">
+			<diffBlocks>
+				<diffBlock>
+					<diffBlock name="picturediff" />
+				</diffBlock>
+			</diffBlocks>
+		</diffDisplay>
+
+	</extension>
+
+	<extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+		point="diffBlock">
+
+		<diffBlock name="picturediff">
+			<properties mode="any">
+				<property name="label">label.diffBlock.picturediff</property>
+			</properties>
+			<fields>
+			  <field schema="file" name="content" />
+			</fields>
+		</diffBlock>
+
+	</extension>
+</component>
