@@ -7,9 +7,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/diff-pictures-actions.xml,
- OSGI-INF/diff-pictures-command-lines.xml,
- OSGI-INF/diff-pictures-operations.xml,
- OSGI-INF/diff-pictures-service-contrib.xml,
- OSGI-INF/diff-pictures-rest.xml
+Nuxeo-Component: OSGI-INF/diff-pictures-actions.xml,OSGI-INF/diff-pict
+ ures-command-lines.xml,OSGI-INF/diff-pictures-operations.xml,OSGI-INF
+ /diff-pictures-service-contrib.xml
 

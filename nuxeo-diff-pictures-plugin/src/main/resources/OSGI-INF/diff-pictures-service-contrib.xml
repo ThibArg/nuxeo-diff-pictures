@@ -1,4 +1,5 @@
 <component name="org.nuxeo.diff.pictures.diffservice">
+<!--
 	<require>org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
 	</require>
 	<extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
@@ -27,4 +28,5 @@
 		</diffBlock>
 
 	</extension>
+-->
 </component>
