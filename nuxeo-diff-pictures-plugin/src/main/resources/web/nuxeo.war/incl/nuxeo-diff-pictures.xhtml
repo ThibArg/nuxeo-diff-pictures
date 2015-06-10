@@ -24,18 +24,11 @@
         </div>
         <div id="#{fancyboxFormId}_right" class="nxdiff_imageContainer">
           <h4 class="nxdiff_imageLabel">#{pictDiffActions.getRightLabel()}</h4>
-           <img src="#{pictDiffActions.getRightImageUrl()}" alt="Failed to get the Left Image" class="nxdiff_image" />
+          <img src="#{pictDiffActions.getRightImageUrl()}" alt="Failed to get the Left Image" class="nxdiff_image" />
         </div>
         <div id="#{fancyboxFormId}_result" class="nxdiff_imageContainer">
-          <h4 class="nxdiff_imageLabel">Differences tutu</h4>
-
-          #{pictDiffActions.paint(null, null)}
-          
-          <p>#{org.jboss.seam.core.manager.currentConversationId}</p>
-          <a4j:mediaOutput element="img" cacheable="false" createContent="#{pictDiffActions.paint}" value="coucou" mimeType="image/png">
-            <s:conversationId value="#{org.jboss.seam.core.manager.currentConversationId}" />
-          </a4j:mediaOutput>
-
+          <h4 class="nxdiff_imageLabel">Differences</h4>
+          <img src="/nuxeo/restAPI/diffPicturesResult/#{pictDiffActions.getLeftDocId()}/#{pictDiffActions.getRightDocId()}" alt="Failed to get the Result Image" class="nxdiff_image" />
         </div>
     </c:when>
     <c:otherwise>

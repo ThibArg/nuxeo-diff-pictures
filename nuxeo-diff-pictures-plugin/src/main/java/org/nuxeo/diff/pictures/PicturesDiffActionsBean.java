@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
-import org.nuxeo.ecm.diff.web.DiffSelectionType;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -95,6 +94,7 @@ public class PicturesDiffActionsBean implements Serializable {
         errorMessage = "";
     }
     
+    /* TEST WITH a4j:mediaOutput
     public void paint(OutputStream out, Object data) {
         
         log.warn("dans paint");
@@ -142,6 +142,7 @@ public class PicturesDiffActionsBean implements Serializable {
         return bResult;
         
     }
+    */
 
     /*
      * This is the same as prepareCompareToLastVersion("lastVersion")
@@ -189,6 +190,7 @@ public class PicturesDiffActionsBean implements Serializable {
         rightPictureUrl = "/nuxeo/nxpicsfile/default/" + rightDoc.getId()
                 + "/Medium:content/" + lastModification;
 
+        /*
         Blob bLeft, bRight, bResult;
         bLeft = (Blob) leftDoc.getPropertyValue("file:content");
         bRight = (Blob) rightDoc.getPropertyValue("file:content");
@@ -198,6 +200,7 @@ public class PicturesDiffActionsBean implements Serializable {
         // to add fuzz and colors, ...
         bResult = dp.compare(null, null);
         // ... how do I get a URL to a temp file?. . .
+         */
 
         return true;
     }
@@ -211,6 +214,10 @@ public class PicturesDiffActionsBean implements Serializable {
 
         return leftLabel;
     }
+    
+    public String getLeftDocId() {
+        return leftDoc == null ? "" : leftDoc.getId();
+    }
 
     public String getRightImageUrl() {
 
@@ -220,6 +227,10 @@ public class PicturesDiffActionsBean implements Serializable {
     public String getRightLabel() {
 
         return rightLabel;
+    }
+    
+    public String getRightDocId() {
+        return rightDoc == null ? "" : rightDoc.getId();
     }
 
     public String getResultImageUrl() {
