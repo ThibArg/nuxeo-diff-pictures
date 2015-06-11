@@ -10,6 +10,7 @@
   xmlns:s="http://jboss.org/schema/seam/taglib">
 
   <LINK href="#{contextPath}/css/nuxeo-diff-pictures.css" rel="stylesheet" type="text/css" />
+  <script src="#{contextPath}/scripts/nuxeo-diff-pictures.js" />
 
   <h3>
     <h:outputText value="#{currentDocument.title} - Compare Pictures"/>
@@ -28,7 +29,7 @@
         </div>
         <div id="#{fancyboxFormId}_result" class="nxdiff_imageContainer">
           <h4 class="nxdiff_imageLabel">Differences</h4>
-          <img src="/nuxeo/restAPI/diffPicturesResult/#{pictDiffActions.getLeftDocId()}/#{pictDiffActions.getRightDocId()}" alt="Failed to get the Result Image" class="nxdiff_image" />
+          <img id="#{fancyboxFormId}_resultImg" src="" alt="" class="nxdiff_image" />
         </div>
     </c:when>
     <c:otherwise>
@@ -37,6 +38,8 @@
       </div>
     </c:otherwise>
   </c:choose>
+  <script>
+      NxDiffPictures.init("#{pictDiffActions.getLeftDocId()}", "#{pictDiffActions.getRightDocId()}", "#{fancyboxFormId}_resultImg");
+  </script>
   </div>
-
 </div>

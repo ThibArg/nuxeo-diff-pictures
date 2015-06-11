@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -37,16 +36,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet;
-import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.runtime.api.Framework;
+
 
 /**
  * /nuxeo/diffPictures?repo=therepo&leftDocId=123456&rightDocId=456789&commandLine=thecommandline&fuzz=1000&highlightColor=Red&lowlightColor=White
  * 
  * commandine, fuzz, highlightColor, lowlightColor and repo are optionnal
+ * 
+ * WARNING: Why can't I use the public static void downloadBlob() from DownloadServlet?
  *
  * @since 7.3
  */
@@ -69,7 +68,7 @@ public class DiffPicturesServlet extends HttpServlet {
         String leftDocId = req.getParameter("leftDocId");
         String rightDocId = req.getParameter("rightDocId");
         String commandLine = req.getParameter("commandLine");
-        String fuzz = req.getParameter("rightDocId");
+        String fuzz = req.getParameter("fuzz");
         String highlightColor = req.getParameter("highlightColor");
         String lowlightColor = req.getParameter("lowlightColor");
         
@@ -123,14 +122,11 @@ public class DiffPicturesServlet extends HttpServlet {
         
         try {
             sendBlobResult(req, resp, bResult);
-                        
         } catch (IOException e) {
             log.error("Unable to handleCompareResult", e);
             sendTextResponse(resp, "Unable to return the result");
             return;
         }
-        
-        
     }
     
     protected void sendTextResponse(HttpServletResponse resp, String response) throws IOException {
@@ -143,43 +139,26 @@ public class DiffPicturesServlet extends HttpServlet {
         
     }
     
+    protected static final int BUFFER_SIZE = 1024 * 512;
     protected void sendBlobResult(HttpServletRequest req, HttpServletResponse resp, Blob blob)  throws IOException{
+        
+        log.warn("Should use DownloadServlet.downloadBlob");
         
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         String fileName = blob.getFilename();
         
-        try {
-            
-            resp.setHeader("Content-Disposition", ServletHelper.getRFC2231ContentDisposition(req, fileName));
-            resp.setContentType(blob.getMimeType());
-            long fileSize = blob.getLength();
-            if (fileSize > 0) {
-                if (fileSize < Integer.MAX_VALUE) {
-                    resp.setContentLength((int) fileSize);
-                }
-                writeStream(in, out, new ByteRange(0, fileSize - 1));
-            }
-            
-        } catch (Exception e) {
-            
-        }
-    }
-    
-    protected static final int BUFFER_SIZE = 1024 * 512;
-    protected void writeStream(InputStream in, OutputStream out, ByteRange range) throws IOException {
-        BufferingServletOutputStream.stopBuffering(out);
+        String cd = ServletHelper.getRFC2231ContentDisposition(req, fileName);
+        resp.setHeader("Content-Disposition", ServletHelper.getRFC2231ContentDisposition(req, fileName));
+        resp.setContentType(blob.getMimeType());
+        long fileSize = blob.getLength();
+        resp.setContentLength((int) fileSize);
+        
         byte[] buffer = new byte[BUFFER_SIZE];
-        long read;
-        long offset = range.getStart();
-        in.skip(offset);
-        while (offset <= range.getEnd() && (read = in.read(buffer)) != -1) {
-            read = Math.min(read, range.getEnd() - offset + 1);
-            out.write(buffer, 0, (int) read);
-            out.flush();
-            offset += read;
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
         }
 
     }
-
 }

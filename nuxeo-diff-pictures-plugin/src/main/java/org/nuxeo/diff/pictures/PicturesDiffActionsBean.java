@@ -17,25 +17,16 @@
 package org.nuxeo.diff.pictures;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.List;
-
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -97,7 +88,7 @@ public class PicturesDiffActionsBean implements Serializable {
     /* TEST WITH a4j:mediaOutput
     public void paint(OutputStream out, Object data) {
         
-        log.warn("dans paint");
+        log.warn("In paint");
         
         try {
             Blob b = compareToLastVersion();
