@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,31 +40,31 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
- * /nuxeo/diffPictures?repo=therepo&leftDocId=123456&rightDocId=456789&commandLine=thecommandline&fuzz=1000&highlightColor=Red&lowlightColor=White
+ * /nuxeo/diffPictures?repo=therepo&leftDocId=123456&rightDocId=456789&
+ * commandLine=thecommandline&fuzz=1000&highlightColor=Red&lowlightColor=White
  * 
- * commandine, fuzz, highlightColor, lowlightColor and repo are optionnal
+ * commandine, fuzz, highlightColor, lowlightColor and repo are optional
  * 
- * WARNING: Why can't I use the public static void downloadBlob() from DownloadServlet?
+ * WARNING: Why can't I use the public static void downloadBlob() from
+ * DownloadServlet?
  *
  * @since 7.3
  */
 public class DiffPicturesServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(DiffPicturesServlet.class);
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    protected static final int BUFFER_SIZE = 1024 * 512;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        
+
         DocumentModel leftDoc, rightDoc;
-                
+
         String repo = req.getParameter("repo");
         String leftDocId = req.getParameter("leftDocId");
         String rightDocId = req.getParameter("rightDocId");
@@ -71,89 +72,89 @@ public class DiffPicturesServlet extends HttpServlet {
         String fuzz = req.getParameter("fuzz");
         String highlightColor = req.getParameter("highlightColor");
         String lowlightColor = req.getParameter("lowlightColor");
-        
-        if(StringUtils.isBlank(leftDocId)) {
+
+        if (StringUtils.isBlank(leftDocId)) {
             sendTextResponse(resp, "you must specify a left document as origin");
             return;
         }
-        if(StringUtils.isBlank(rightDocId)) {
-            sendTextResponse(resp, "you must specify 'right' used for comparison against the left document.");
+        if (StringUtils.isBlank(rightDocId)) {
+            sendTextResponse(resp,
+                    "you must specify 'right' used for comparison against the left document.");
             return;
         }
 
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        CoreSession coreSession;
-        
-        if(StringUtils.isNotBlank(repo)) {
-            coreSession = repositoryManager.getRepository(repo).open();
-        } else {
-            coreSession = repositoryManager.getDefaultRepository().open();
+        if (StringUtils.isBlank(repo)) {
+            repo = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
         }
-        
-        leftDoc = coreSession.getDocument(new IdRef(leftDocId));
-        rightDoc = coreSession.getDocument(new IdRef(rightDocId));
-        
-        Blob bLeft, bRight, bResult;
-        bLeft = (Blob) leftDoc.getPropertyValue("file:content");
-        bRight = (Blob) rightDoc.getPropertyValue("file:content");
-        DiffPictures dp = new DiffPictures(bLeft, bRight);
-        
-        HashMap<String, Serializable> params = new HashMap<String, Serializable>();
-        if(StringUtils.isNotBlank(fuzz)) {
-            params.put("fuzz", fuzz);
-        }
-        if(StringUtils.isNotBlank(highlightColor)) {
-            params.put("highlightColor", highlightColor);
-        }
-        if(StringUtils.isNotBlank(lowlightColor)) {
-            params.put("lowlightColor", lowlightColor);
-        }
-        
-        try {
-            bResult = dp.compare(commandLine, params);
-        } catch (CommandNotAvailable | IOException e) {
-            log.error("Unable to compare the pictures", e);
-            sendTextResponse(resp, "Unable to compare the pictures");
-            return;
-        }
-        
-        resp.setHeader("Cache-Control", "no-cache");
-        resp.setHeader("Pragma", "no-cache");
-        
-        try {
-            sendBlobResult(req, resp, bResult);
-        } catch (IOException e) {
-            log.error("Unable to handleCompareResult", e);
-            sendTextResponse(resp, "Unable to return the result");
-            return;
+
+        // This try-with-resources does an implicit close() at the end
+        try (CoreSession coreSession = CoreInstance.openCoreSession(repo)) {
+
+            leftDoc = coreSession.getDocument(new IdRef(leftDocId));
+            rightDoc = coreSession.getDocument(new IdRef(rightDocId));
+
+            Blob bLeft, bRight, bResult;
+            bLeft = (Blob) leftDoc.getPropertyValue("file:content");
+            bRight = (Blob) rightDoc.getPropertyValue("file:content");
+            DiffPictures dp = new DiffPictures(bLeft, bRight);
+
+            HashMap<String, Serializable> params = new HashMap<String, Serializable>();
+            if (StringUtils.isNotBlank(fuzz)) {
+                params.put("fuzz", fuzz);
+            }
+            if (StringUtils.isNotBlank(highlightColor)) {
+                params.put("highlightColor", highlightColor);
+            }
+            if (StringUtils.isNotBlank(lowlightColor)) {
+                params.put("lowlightColor", lowlightColor);
+            }
+
+            try {
+                bResult = dp.compare(commandLine, params);
+            } catch (CommandNotAvailable | IOException e) {
+                log.error("Unable to compare the pictures", e);
+                sendTextResponse(resp, "Unable to compare the pictures");
+                return;
+            }
+
+            resp.setHeader("Cache-Control", "no-cache");
+            resp.setHeader("Pragma", "no-cache");
+            try {
+                sendBlobResult(req, resp, bResult);
+            } catch (IOException e) {
+                log.error("Unable to handleCompareResult", e);
+                sendTextResponse(resp, "Unable to return the result");
+                return;
+            }
         }
     }
-    
-    protected void sendTextResponse(HttpServletResponse resp, String response) throws IOException {
-        
+
+    protected void sendTextResponse(HttpServletResponse resp, String response)
+            throws IOException {
+
         resp.setContentType("text/plain");
         resp.setContentLength(response.getBytes().length);
         OutputStream out = resp.getOutputStream();
         out.write(response.getBytes());
         out.close();
-        
+
     }
-    
-    protected static final int BUFFER_SIZE = 1024 * 512;
-    protected void sendBlobResult(HttpServletRequest req, HttpServletResponse resp, Blob blob)  throws IOException{
-        
-        log.warn("Should use DownloadServlet.downloadBlob");
-        
+
+    protected void sendBlobResult(HttpServletRequest req,
+            HttpServletResponse resp, Blob blob) throws IOException {
+
+        log.warn("Should use DownloadServlet.downloadBlob with 7.3 and higher");
+
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         String fileName = blob.getFilename();
-        
-        String cd = ServletHelper.getRFC2231ContentDisposition(req, fileName);
-        resp.setHeader("Content-Disposition", ServletHelper.getRFC2231ContentDisposition(req, fileName));
+
+        resp.setHeader("Content-Disposition",
+                ServletHelper.getRFC2231ContentDisposition(req, fileName));
         resp.setContentType(blob.getMimeType());
         long fileSize = blob.getLength();
         resp.setContentLength((int) fileSize);
-        
+
         byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
         while ((bytesRead = in.read(buffer)) != -1) {

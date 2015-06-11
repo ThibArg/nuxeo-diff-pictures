@@ -24,6 +24,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
+import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,7 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 @Name("pictDiffActions")
-@Scope(ScopeType.CONVERSATION)
+@Scope(ScopeType.EVENT)
 public class PicturesDiffActionsBean implements Serializable {
 
     private static final long serialVersionUID = -1;
@@ -67,14 +69,19 @@ public class PicturesDiffActionsBean implements Serializable {
     protected String rightLabel;
 
     protected String errorMessage;
+    
 
-    /*
-     * @Create public void initialize() {
-     * 
-     * }
-     */
+    @Create
+    public void initialize() {
+        // . . .
+    }
 
-    private void iniThisBean() {
+    @Destroy
+    public void destroy() {
+        // . . .
+    }
+
+    private void cleanup() {
 
         leftPictureUrl = "";
         leftLabel = "";
@@ -84,69 +91,19 @@ public class PicturesDiffActionsBean implements Serializable {
 
         errorMessage = "";
     }
-    
-    /* TEST WITH a4j:mediaOutput
-    public void paint(OutputStream out, Object data) {
-        
-        log.warn("In paint");
-        
-        try {
-            Blob b = compareToLastVersion();
-            
-            out=((HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse()).getOutputStream();
-            
-            b.transferTo(out);
-            
-        } catch(Exception e) {
-            log.error("error", e);
-           // throw new IOException("blahblah", e);
-        }
-        
-    }
-    
-    public Blob compareToLastVersion() throws CommandNotAvailable, IOException {
-        
-        iniThisBean();
-        
-        rightDoc = navigationContext.getCurrentDocument();
-        rightLabel = "Current";
-
-        leftDoc = documentManager.getLastDocumentVersion(rightDoc.getRef());
-        leftLabel = "Version " + leftDoc.getVersionLabel();
-
-        String lastModification = ""
-                + (((Calendar) rightDoc.getPropertyValue("dc:modified")).getTimeInMillis());
-        leftPictureUrl = "/nuxeo/nxpicsfile/default/" + leftDoc.getId()
-                + "/Medium:content/" + lastModification;
-        rightPictureUrl = "/nuxeo/nxpicsfile/default/" + rightDoc.getId()
-                + "/Medium:content/" + lastModification;
-
-        Blob bLeft, bRight, bResult;
-        bLeft = (Blob) leftDoc.getPropertyValue("file:content");
-        bRight = (Blob) rightDoc.getPropertyValue("file:content");
-        DiffPictures dp = new DiffPictures(bLeft, bRight);
-
-        // ...use UI elements to choose command line,
-        // to add fuzz and colors, ...
-        bResult = dp.compare(null, null);
-        
-        return bResult;
-        
-    }
-    */
 
     /*
      * This is the same as prepareCompareToLastVersion("lastVersion")
      */
-    public boolean prepareCompareToLastVersion() throws CommandNotAvailable, IOException {
-
+    public boolean prepareCompareToLastVersion() throws CommandNotAvailable,
+            IOException {
         return prepareCompareVersion(null);
     }
 
     public boolean prepareCompareVersion(String inVersionLabel)
             throws CommandNotAvailable, IOException {
-
-        iniThisBean();
+        
+        cleanup();
 
         rightDoc = navigationContext.getCurrentDocument();
         rightLabel = "Current";
@@ -182,15 +139,14 @@ public class PicturesDiffActionsBean implements Serializable {
                 + "/Medium:content/" + lastModification;
 
         /*
-        Blob bLeft, bRight, bResult;
-        bLeft = (Blob) leftDoc.getPropertyValue("file:content");
-        bRight = (Blob) rightDoc.getPropertyValue("file:content");
-        DiffPictures dp = new DiffPictures(bLeft, bRight);
-
-        // ...use UI elements to choose command line,
-        // to add fuzz and colors, ...
-        bResult = dp.compare(null, null);
-        // ... how do I get a URL to a temp file?. . .
+         * Blob bLeft, bRight, bResult; bLeft = (Blob)
+         * leftDoc.getPropertyValue("file:content"); bRight = (Blob)
+         * rightDoc.getPropertyValue("file:content"); DiffPictures dp = new
+         * DiffPictures(bLeft, bRight);
+         * 
+         * // ...use UI elements to choose command line, // to add fuzz and
+         * colors, ... bResult = dp.compare(null, null); // ... how do I get a
+         * URL to a temp file?. . .
          */
 
         return true;
@@ -205,7 +161,7 @@ public class PicturesDiffActionsBean implements Serializable {
 
         return leftLabel;
     }
-    
+
     public String getLeftDocId() {
         return leftDoc == null ? "" : leftDoc.getId();
     }
@@ -219,7 +175,7 @@ public class PicturesDiffActionsBean implements Serializable {
 
         return rightLabel;
     }
-    
+
     public String getRightDocId() {
         return rightDoc == null ? "" : rightDoc.getId();
     }
