@@ -44,7 +44,13 @@ public class DiffPictures {
 
     private static final Log log = LogFactory.getLog(DiffPictures.class);
 
-    public static final String DIFF_PICTURES_DEFAULT_COMMAND = "diff-pictures-default";
+    public static final String DEFAULT_COMMAND = "diff-pictures-default";
+    
+    public static final String DEFAULT_FUZZ = "0";
+    
+    public static final String DEFAULT_HIGHLIGHT_COLOR= "Red";
+    
+    public static final String DEFAULT_LOWLIGHT_COLOR = "White";
 
     protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
 
@@ -67,7 +73,7 @@ public class DiffPictures {
         Blob result = null;
         String finalName;
 
-        commandLine = StringUtils.isBlank(inCommandLine) ? DIFF_PICTURES_DEFAULT_COMMAND
+        commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND
                 : inCommandLine;
 
         clParameters = inParams == null ? new HashMap<String, Serializable>()
@@ -129,15 +135,15 @@ public class DiffPictures {
     protected void checkDefaultParametersValues() {
 
         if (clParameters.get("fuzz") == null) {
-            clParameters.put("fuzz", "0");
+            clParameters.put("fuzz", DEFAULT_FUZZ);
         }
 
         if (clParameters.get("highlightColor") == null) {
-            clParameters.put("highlightColor", "Red");
+            clParameters.put("highlightColor", DEFAULT_HIGHLIGHT_COLOR);
         }
 
         if (clParameters.get("lowlightColor") == null) {
-            clParameters.put("lowlightColor", "White");
+            clParameters.put("lowlightColor", DEFAULT_LOWLIGHT_COLOR);
         }
 
     }

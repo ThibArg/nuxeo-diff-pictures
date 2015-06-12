@@ -188,5 +188,17 @@ public class PicturesDiffActionsBean implements Serializable {
     public String getErrorMessage() {
         return errorMessage;
     }
+    
+    public String getDefaultFuzz() {
+        return DiffPictures.DEFAULT_FUZZ;
+    }
+    
+    public String getDefaultHighlightColor() {
+        return DiffPictures.DEFAULT_HIGHLIGHT_COLOR;
+    }
+    
+    public String getDefaultLowlightColor() {
+        return DiffPictures.DEFAULT_LOWLIGHT_COLOR;
+    }
 
 }

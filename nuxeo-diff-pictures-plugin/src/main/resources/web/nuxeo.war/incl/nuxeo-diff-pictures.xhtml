@@ -42,21 +42,39 @@
         </div>
       </div>
       <div class="ui segment">
-        <h4 class="ui hugeheader nxdiff_imageLabel">Differences</h4>
+        <h4 class="ui header nxdiff_imageLabel">Differences</h4>
         <div class="ui grid">
-           <div class="four wide column nxdiff_imageContainer" style="padding-left:35px;">
-            <div class="ui segment">
-            <select name="resultSize" onchange="NxDiffPictures.changeResultSize(this);">
-              <option value="display size" selected="selected">Display size:</option>
-              <option value="medium">Small</option>
-              <option value="large">Default</option>
-              <option value="huge">Large</option>
-            </select>
-
+          <div class="four wide column nxdiff_imageContainer" style="padding-left:35px;">
+            <div class="ui center aligned segment">
+            <!--
+              <select name="resultSize" onchange="NxDiffPictures.changeResultSize(this);">
+                <option value="display size" selected="selected">Display size:</option>
+                <option value="medium">Small</option>
+                <option value="large">Default</option>
+                <option value="huge">Large</option>
+              </select>
+              -->
+                <div id="toto" class="ui basic segment">
+                  <div class="ui label">Fuzz <span id="fuzzLabel">(0)</span></div>
+                  <input id="fuzzSlider" type="range" min="0" max="100" value="0" oninput="updateFuzzLabel()"  style="width:100%;margin:1em 0 1em 0"/>
+                  <div class="ui label">Highlight Color</div>
+                  <div class="ui input">
+                    <input id="highlightColor" type="text" class="nxdiff_field" />
+                  </div>
+                  <div class="ui label">Lowlight Color</div>
+                  <div class="ui input">
+                    <input id="lowlightColor" type="text" class="nxdiff_field" />
+                  </div>
+                  <div class="ui divider"></div>
+                  <div class="ui blue button" onclick="updateResultImage()">Submit</div>
+                </div>
             </div>
-           </div>
+          </div>
+
           <div class="twelve wide column nxdiff_imageContainer" style="padding-right:35px;">
-            <img id="#{fancyboxFormId}_resultImg" src="" alt="" class="ui centered large image nxdiff_resultImage" />
+            <div class="ui segment">
+              <img id="#{fancyboxFormId}_resultImg" src="" alt="" class="ui centered large image nxdiff_resultImage" />
+            </div>
           </div>
         </div>
       </div>
@@ -69,7 +87,15 @@
     </c:if>
 
     <script>
-      NxDiffPictures.init("#{pictDiffActions.getLeftDocId()}", "#{pictDiffActions.getRightDocId()}", "#{fancyboxFormId}_resultImg");
+      var params = {
+        leftDocId: "#{pictDiffActions.getLeftDocId()}",
+        rightDocId: "#{pictDiffActions.getRightDocId()}",
+        resultImgId: "#{fancyboxFormId}_resultImg",
+        fuzz: "#{pictDiffActions.getDefaultFuzz()}",
+        highlightColor: "#{pictDiffActions.getDefaultHighlightColor()}",
+        lowlightColor: "#{pictDiffActions.getDefaultLowlightColor()}"
+      }
+      NxDiffPictures.init(params);
     </script>
   </div>
 </div>
