@@ -57,14 +57,46 @@
                 <div id="toto" class="ui basic segment">
                   <div class="ui label">Fuzz <span id="fuzzLabel">(0)</span></div>
                   <input id="fuzzSlider" type="range" min="0" max="100" value="0" oninput="updateFuzzLabel()"  style="width:100%;margin:1em 0 1em 0"/>
-                  <div class="ui label">Highlight Color</div>
+                  <div class="ui label">Highlight Color
+                    <div id="highlightColor_dropdown" class="ui icon bottom left pointing dropdown button">
+                      <i class="chevron circle down icon"></i>
+                      <div class="menu">
+                        <div class="item">Red</div>
+                        <div class="item">Green</div>
+                        <div class="item">Blue</div>
+                        <div class="item">White</div>
+                        <div class="item">Black</div>
+                        <div class="divider"></div>
+                        <div class="item">FireBrick</div>
+                        <div class="item">SeaGreen</div>
+                        <div class="item">SteelBlue</div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="ui input">
                     <input id="highlightColor" type="text" class="nxdiff_field" />
                   </div>
-                  <div class="ui label">Lowlight Color</div>
+
+                  <div class="ui label">Lowlight Color
+                    <div id="lowlightColor_dropdown" class="ui icon bottom left pointing dropdown button">
+                      <i class="chevron circle down icon"></i>
+                      <div class="menu">
+                        <div class="item">Red</div>
+                        <div class="item">Green</div>
+                        <div class="item">Blue</div>
+                        <div class="item">White</div>
+                        <div class="item">Black</div>
+                        <div class="divider"></div>
+                        <div class="item">LightCoral</div>
+                        <div class="item">PaleGreen</div>
+                        <div class="item">SkyBlue</div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="ui input">
                     <input id="lowlightColor" type="text" class="nxdiff_field" />
                   </div>
+
                   <div class="ui divider"></div>
                   <div class="ui blue button" onclick="updateResultImage()">Submit</div>
                 </div>

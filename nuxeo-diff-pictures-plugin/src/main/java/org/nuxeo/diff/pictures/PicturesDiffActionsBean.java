@@ -69,16 +69,19 @@ public class PicturesDiffActionsBean implements Serializable {
     protected String rightLabel;
 
     protected String errorMessage;
-    
 
     @Create
     public void initialize() {
         // . . .
     }
 
+    /*
+     * We delete all the temp files created during the bean lifecycle, if any
+     */
     @Destroy
     public void destroy() {
-        // . . .
+
+        TempFilesHandler.deleteTempFolder(getLeftDocId(), getRightDocId());
     }
 
     private void cleanup() {
@@ -102,7 +105,7 @@ public class PicturesDiffActionsBean implements Serializable {
 
     public boolean prepareCompareVersion(String inVersionLabel)
             throws CommandNotAvailable, IOException {
-        
+
         cleanup();
 
         rightDoc = navigationContext.getCurrentDocument();
@@ -137,17 +140,6 @@ public class PicturesDiffActionsBean implements Serializable {
                 + "/Medium:content/" + lastModification;
         rightPictureUrl = "/nuxeo/nxpicsfile/default/" + rightDoc.getId()
                 + "/Medium:content/" + lastModification;
-
-        /*
-         * Blob bLeft, bRight, bResult; bLeft = (Blob)
-         * leftDoc.getPropertyValue("file:content"); bRight = (Blob)
-         * rightDoc.getPropertyValue("file:content"); DiffPictures dp = new
-         * DiffPictures(bLeft, bRight);
-         * 
-         * // ...use UI elements to choose command line, // to add fuzz and
-         * colors, ... bResult = dp.compare(null, null); // ... how do I get a
-         * URL to a temp file?. . .
-         */
 
         return true;
     }
@@ -188,15 +180,15 @@ public class PicturesDiffActionsBean implements Serializable {
     public String getErrorMessage() {
         return errorMessage;
     }
-    
+
     public String getDefaultFuzz() {
         return DiffPictures.DEFAULT_FUZZ;
     }
-    
+
     public String getDefaultHighlightColor() {
         return DiffPictures.DEFAULT_HIGHLIGHT_COLOR;
     }
-    
+
     public String getDefaultLowlightColor() {
         return DiffPictures.DEFAULT_LOWLIGHT_COLOR;
     }

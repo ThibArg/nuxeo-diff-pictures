@@ -45,11 +45,11 @@ public class DiffPictures {
     private static final Log log = LogFactory.getLog(DiffPictures.class);
 
     public static final String DEFAULT_COMMAND = "diff-pictures-default";
-    
+
     public static final String DEFAULT_FUZZ = "0";
-    
-    public static final String DEFAULT_HIGHLIGHT_COLOR= "Red";
-    
+
+    public static final String DEFAULT_HIGHLIGHT_COLOR = "Red";
+
     public static final String DEFAULT_LOWLIGHT_COLOR = "White";
 
     protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
@@ -58,13 +58,27 @@ public class DiffPictures {
 
     Blob b2;
 
+    String leftDocId;
+
+    String rightDocId;
+
     String commandLine;
 
     Map<String, Serializable> clParameters;
 
     public DiffPictures(Blob inB1, Blob inB2) {
+
+        this(inB1, inB2, null, null);
+
+    }
+
+    public DiffPictures(Blob inB1, Blob inB2, String inLeftDocId,
+            String inRightDocId) {
         b1 = inB1;
         b2 = inB2;
+        leftDocId = inLeftDocId;
+        rightDocId = inRightDocId;
+
     }
 
     public Blob compare(String inCommandLine, Map<String, Serializable> inParams)
@@ -72,6 +86,7 @@ public class DiffPictures {
 
         Blob result = null;
         String finalName;
+        boolean mustTrackTempFile = false;
 
         commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND
                 : inCommandLine;
@@ -97,8 +112,19 @@ public class DiffPictures {
             params.addNamedParameter(entry.getKey(), (String) entry.getValue());
         }
 
-        String destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis()
-                + "-" + finalName;
+        String destFilePath;
+
+        if (StringUtils.isNotBlank(leftDocId)) {
+            File tempFolder = TempFilesHandler.prepareOrGetTempFolder(
+                    leftDocId, rightDocId);
+            destFilePath = tempFolder.getAbsolutePath() + "/"
+                    + System.currentTimeMillis() + "-" + finalName;
+        } else {
+            mustTrackTempFile = true;
+            destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis()
+                    + "-" + finalName;
+        }
+
         params.addNamedParameter("targetFilePath", destFilePath);
 
         CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
@@ -116,14 +142,20 @@ public class DiffPictures {
                     + commandLine + ">. Final command [ "
                     + execResult.getCommandLine() + " ] returned with error "
                     + execResult.getReturnCode(), execResult.getError());
+        } else {
+            if (mustTrackTempFile) {
+                // Well. If the GC cleans the object and the Framework deletes
+                // the file _before_ the browser gets it, then, too bad...
+                Framework.trackFile(tempDestFile, this);
+            }
         }
 
-        //Framework.trackFile(tempDestFile, this);
+        // Framework.trackFile(tempDestFile, this);
         result = new FileBlob(tempDestFile);
         if (result != null) {
             result.setFilename(finalName);
         }
-        
+
         return result;
     }
 

@@ -96,7 +96,7 @@ public class DiffPicturesServlet extends HttpServlet {
             Blob bLeft, bRight, bResult;
             bLeft = (Blob) leftDoc.getPropertyValue("file:content");
             bRight = (Blob) rightDoc.getPropertyValue("file:content");
-            DiffPictures dp = new DiffPictures(bLeft, bRight);
+            DiffPictures dp = new DiffPictures(bLeft, bRight, leftDocId, rightDocId);
 
             HashMap<String, Serializable> params = new HashMap<String, Serializable>();
             if (StringUtils.isNotBlank(fuzz)) {
