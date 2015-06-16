@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -70,6 +71,13 @@ public class DiffPictures {
 
         this(inB1, inB2, null, null);
 
+    }
+
+    public DiffPictures(DocumentModel inLeft, DocumentModel inRight) {
+
+        this((Blob) inLeft.getPropertyValue("file:content"),
+                (Blob) inRight.getPropertyValue("file:content"),
+                inLeft.getId(), inRight.getId());
     }
 
     public DiffPictures(Blob inB1, Blob inB2, String inLeftDocId,
