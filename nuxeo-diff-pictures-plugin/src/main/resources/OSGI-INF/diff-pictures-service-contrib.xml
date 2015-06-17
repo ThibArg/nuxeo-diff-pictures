@@ -8,7 +8,7 @@
 		<diffDisplay type="Picture">
 			<diffBlocks>
 				<diffBlock>
-					<diffBlock name="picturediff" />
+					<diffBlock name="diffpictures" />
 				</diffBlock>
 			</diffBlocks>
 		</diffDisplay>
@@ -18,9 +18,9 @@
 	<extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
 		point="diffBlock">
 
-		<diffBlock name="picturediff">
+		<diffBlock name="diffpictures" label="DiffPictures-block-label">
 			<properties mode="any">
-				<property name="label">label.diffBlock.picturediff</property>
+				<property name="label">label.diffBlock.diffpictures</property>
 			</properties>
 			<fields>
 			  <field schema="file" name="content" />

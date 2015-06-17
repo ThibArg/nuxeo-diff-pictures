@@ -178,7 +178,7 @@ public class DiffPicturesTest {
                 assertTrue("b should be 0", b == 0);
             }
         }
-
+        
         deleteFile(result);
 
     }
