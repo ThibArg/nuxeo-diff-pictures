@@ -20,6 +20,7 @@ package org.nuxeo.diff.pictures.test;
 import static org.junit.Assert.*;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -94,7 +95,10 @@ public class DiffPicturesTest {
 
         result = dp.compare(null, null);
 
-        checkIsImage(result, ISLAND_W, ISLAND_H);
+        BufferedImage bi = checkIsImage(result);
+        assertEquals(bi.getWidth(), ISLAND_W);
+        assertEquals(bi.getHeight(), ISLAND_H);
+
         deleteFile(result);
 
     }
@@ -121,7 +125,9 @@ public class DiffPicturesTest {
         params.put("fuzz", "10%");
         result = dp.compare(null, params);
 
-        checkIsImage(result, ISLAND_W, ISLAND_H);
+        BufferedImage bi = checkIsImage(result);
+        assertEquals(bi.getWidth(), ISLAND_W);
+        assertEquals(bi.getHeight(), ISLAND_H);
 
         aFile = ((FileBlob) result).getFile();
         assertTrue("Result image with fuzz should be lower than original",
@@ -130,20 +136,64 @@ public class DiffPicturesTest {
         deleteFile(result);
 
     }
+    
+    @Test
+    public void testSamePicture() throws Exception {
 
-    protected void checkIsImage(Blob inResult, int inExpectedW, int expectedH)
-            throws Exception {
+        File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
+        File img2 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
 
-        assertTrue(inResult instanceof FileBlob);
-        checkIsImage((FileBlob) inResult, inExpectedW, expectedH);
+        FileBlob blob1 = new FileBlob(img1);
+        FileBlob blob2 = new FileBlob(img2);
+
+        Blob result;
+        HashMap<String, Serializable> params;
+        DiffPictures dp = new DiffPictures(blob1, blob2);
+
+        // We make the whole thing red
+        params = new HashMap<String, Serializable>();
+        params.put("highlightColor", "Red");
+        params.put("lowlightColor", "Red");
+        result = dp.compare(null, params);
+
+        BufferedImage bi = checkIsImage(result);
+        assertEquals(bi.getWidth(), ISLAND_W);
+        assertEquals(bi.getHeight(), ISLAND_H);
+        
+        // Test a 40x40 rectangle in the middle, where every pixel should be red
+        int start_i = (ISLAND_W / 2) - 20;
+        int max_i = (ISLAND_W / 2) + 20;
+        int start_j = (ISLAND_H / 2) - 20;
+        int max_j = (ISLAND_H / 2) + 20;
+
+        for (int i = start_i; i < max_i; i++) {
+            for (int j = start_j; j < max_j; j++) {
+                int pixel = bi.getRGB(i, j);
+                int r = pixel >> 16 & 0xff;
+                int g = pixel >> 8 & 0xff;
+                int b = pixel & 0xff;
+                
+                assertTrue("r should be 255", r == 255);
+                assertTrue("g should be 0", g == 0);
+                assertTrue("b should be 0", b == 0);
+            }
+        }
+
+        deleteFile(result);
+
     }
 
-    protected void checkIsImage(FileBlob inResult, int inExpectedW,
-            int expectedH) throws Exception {
+    protected BufferedImage checkIsImage(Blob inBlob) throws Exception {
 
-        assertNotNull(inResult);
+        assertTrue(inBlob instanceof FileBlob);
+        return checkIsImage((FileBlob) inBlob);
+    }
 
-        File f = inResult.getFile();
+    protected BufferedImage checkIsImage(FileBlob inBlob) throws Exception {
+
+        assertNotNull(inBlob);
+
+        File f = inBlob.getFile();
         assertNotNull(f);
         assertTrue(f.length() > 0);
 
@@ -152,12 +202,11 @@ public class DiffPicturesTest {
             bi = ImageIO.read(f);
             assertNotNull(bi);
 
-            assertEquals(inExpectedW, bi.getWidth());
-            assertEquals(expectedH, bi.getHeight());
-
         } catch (IOException e) {
             throw new Exception("Error reading the file", e);
         }
+
+        return bi;
 
     }
 
